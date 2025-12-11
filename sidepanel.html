@@ -3,206 +3,192 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Action Recorder Studio</title>
+  <title>Action Recorder</title>
   <link rel="stylesheet" href="sidepanel.css">
 </head>
 <body>
   <div class="app-container">
-    <!-- Header -->
-    <header class="header">
-      <div class="header-title">
-        <span class="logo">🎬</span>
-        <h1>Action Recorder</h1>
-      </div>
-      <div class="header-actions">
-        <button id="settingsBtn" class="icon-btn" title="Settings">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <circle cx="12" cy="12" r="3"></circle>
-            <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
-          </svg>
-        </button>
-      </div>
-    </header>
-
     <!-- Navigation Tabs -->
     <nav class="nav-tabs">
-      <button class="nav-tab active" data-tab="recorder">
+      <button class="nav-tab active" data-tab="record">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
           <circle cx="12" cy="12" r="10"></circle>
           <circle cx="12" cy="12" r="4" fill="currentColor"></circle>
         </svg>
-        Recorder
+        Record
+      </button>
+      <button class="nav-tab" data-tab="addnew">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <line x1="12" y1="5" x2="12" y2="19"></line>
+          <line x1="5" y1="12" x2="19" y2="12"></line>
+        </svg>
+        Add New
       </button>
       <button class="nav-tab" data-tab="history">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"></path>
           <path d="M3 3v5h5"></path>
+          <path d="M3.05 13A9 9 0 1 0 6 5.3L3 8"></path>
           <path d="M12 7v5l4 2"></path>
         </svg>
         History
-      </button>
-      <button class="nav-tab" data-tab="data">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
-          <polyline points="14 2 14 8 20 8"></polyline>
-          <line x1="16" y1="13" x2="8" y2="13"></line>
-          <line x1="16" y1="17" x2="8" y2="17"></line>
-        </svg>
-        Data
       </button>
     </nav>
 
     <!-- Main Content -->
     <main class="main-content">
-      <!-- Recorder Tab -->
-      <section id="recorderTab" class="tab-content active">
-        <!-- Recording Controls -->
-        <div class="control-panel">
-          <div class="recording-name-input">
-            <label for="recordingName">Recording Name</label>
-            <input type="text" id="recordingName" placeholder="My Test Recording">
-          </div>
+      
+      <!-- ==================== RECORD TAB ==================== -->
+      <section id="recordTab" class="tab-content active">
+        <div class="record-panel">
           
+          <!-- Test Suite Selection -->
+          <div class="form-group">
+            <label class="form-label">Test Suite</label>
+            <div class="select-with-button">
+              <select id="testSuiteSelect" class="form-select">
+                <option value="">Select a test suite...</option>
+              </select>
+              <button id="addNewSuiteBtn" class="btn btn-icon" title="Add New Test Suite">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <line x1="12" y1="5" x2="12" y2="19"></line>
+                  <line x1="5" y1="12" x2="19" y2="12"></line>
+                </svg>
+              </button>
+            </div>
+          </div>
+
+          <!-- Test Case Selection -->
+          <div class="form-group" id="testCaseGroup" style="display: none;">
+            <label class="form-label">Test Case</label>
+            <select id="testCaseSelect" class="form-select" disabled>
+              <option value="">Select a test case...</option>
+            </select>
+          </div>
+
+          <!-- Recording Controls -->
           <div class="control-buttons">
-            <button id="startBtn" class="btn btn-primary btn-large">
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+            <button id="startBtn" class="btn btn-start" disabled>
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
                 <circle cx="12" cy="12" r="10"/>
               </svg>
               Start Recording
             </button>
-            <button id="stopBtn" class="btn btn-danger btn-large" disabled>
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+            <button id="stopBtn" class="btn btn-stop" disabled style="display: none;">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
                 <rect x="6" y="6" width="12" height="12" rx="2"/>
               </svg>
               Stop Recording
             </button>
           </div>
-          
+
+          <!-- Recording Status -->
           <div class="recording-status" id="recordingStatus">
-            <span class="status-dot"></span>
-            <span class="status-text">Ready to record</span>
+            <span class="status-indicator"></span>
+            <span class="status-text">Select a test case to begin</span>
           </div>
-        </div>
 
-        <!-- Page Marker Input (shown during recording) -->
-        <div class="page-marker-panel" id="pageMarkerPanel" style="display: none;">
-          <div class="panel-header">
-            <h3>📄 Page Marker</h3>
-          </div>
-          
-          <!-- Auto Monitor Section -->
-          <div class="auto-monitor-section">
-            <div class="monitor-toggle">
-              <label class="toggle-label">
-                <input type="checkbox" id="autoMonitorToggle">
-                <span class="toggle-slider"></span>
-                Auto-detect page changes
-              </label>
+          <!-- Recording Tools Panel (shown during recording) -->
+          <div class="recording-tools" id="recordingTools" style="display: none;">
+            
+            <!-- Page Marker Section -->
+            <div class="tool-section">
+              <div class="tool-header">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                  <polyline points="14 2 14 8 20 8"></polyline>
+                </svg>
+                <span>Page Marker</span>
+              </div>
+              <p class="tool-description">Mark when you navigate to a new page</p>
+              <div class="page-marker-input">
+                <input type="text" id="pageMarkerName" placeholder="Enter page name (e.g., Login Page)">
+                <button id="addPageMarkerBtn" class="btn btn-secondary">Add Page</button>
+              </div>
             </div>
-            <div class="monitor-status" id="monitorStatus" style="display: none;">
-              <span class="monitor-dot"></span>
-              <span class="monitor-text">Monitoring: <strong id="currentPageName">-</strong></span>
-            </div>
-          </div>
-          
-          <!-- Manual Page Marker -->
-          <div class="page-marker-input">
-            <input type="text" id="pageMarkerName" placeholder="Or enter page name manually">
-            <button id="addPageMarkerBtn" class="btn btn-secondary">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <line x1="12" y1="5" x2="12" y2="19"></line>
-                <line x1="5" y1="12" x2="19" y2="12"></line>
-              </svg>
-              Add
-            </button>
-          </div>
-          
-          <!-- Assertion Mode Button -->
-          <div class="assertion-section">
-            <button id="assertionBtn" class="btn btn-assertion">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
-                <polyline points="22 4 12 14.01 9 11.01"></polyline>
-              </svg>
-              Add Assertion
-            </button>
-            <span class="assertion-hint" id="assertionHint" style="display: none;">Click an element on the page to assert...</span>
-          </div>
-          
-          <p class="helper-text">Mark page transitions for organized test code generation</p>
-        </div>
 
-        <!-- Current Recording Actions -->
-        <div class="actions-panel">
-          <div class="panel-header">
-            <h3>Recorded Actions</h3>
-            <span class="action-count" id="actionCount">0 actions</span>
-          </div>
-          
-          <div class="actions-list" id="actionsList">
-            <div class="empty-state">
-              <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-                <path d="M15 15l-2 5L9 9l11 4-5 2zm0 0l5 5M7.188 2.239l.777 2.897M5.136 7.965l-2.898-.777M13.95 4.05l-2.122 2.122m-5.657 5.656l-2.12 2.122"/>
-              </svg>
-              <p>Click "Start Recording" to capture actions</p>
+            <!-- Assertions Section -->
+            <div class="tool-section">
+              <div class="tool-header">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                  <polyline points="22 4 12 14.01 9 11.01"></polyline>
+                </svg>
+                <span>Assertions</span>
+              </div>
+              <p class="tool-description">Click an element to assert its presence or value</p>
+              <div class="assertion-buttons">
+                <button id="assertElementBtn" class="btn btn-assertion">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                  </svg>
+                  Assert Element
+                </button>
+                <button id="assertTextBtn" class="btn btn-assertion">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <polyline points="4 7 4 4 20 4 20 7"></polyline>
+                    <line x1="9" y1="20" x2="15" y2="20"></line>
+                    <line x1="12" y1="4" x2="12" y2="20"></line>
+                  </svg>
+                  Assert Text
+                </button>
+              </div>
+              <div class="assertion-hint" id="assertionHint" style="display: none;">
+                <span class="hint-dot"></span>
+                Click an element on the page to assert...
+              </div>
             </div>
           </div>
-        </div>
 
-        <!-- Export Panel (shown after recording) -->
-        <div class="export-panel" id="exportPanel" style="display: none;">
-          <div class="panel-header">
-            <h3>Export Recording</h3>
+          <!-- Recorded Actions Panel -->
+          <div class="actions-panel" id="actionsPanel">
+            <div class="panel-header">
+              <h3>Recorded Actions</h3>
+              <span class="action-count" id="actionCount">0 actions</span>
+            </div>
+            
+            <div class="actions-list" id="actionsList">
+              <div class="empty-state">
+                <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                  <path d="M15 15l-2 5L9 9l11 4-5 2zm0 0l5 5M7.188 2.239l.777 2.897M5.136 7.965l-2.898-.777M13.95 4.05l-2.122 2.122m-5.657 5.656l-2.12 2.122"/>
+                </svg>
+                <p>No actions recorded yet</p>
+                <span class="hint">Start recording to capture interactions</span>
+              </div>
+            </div>
           </div>
-          
-          <div class="export-options">
-            <button class="export-btn" data-format="json">
-              <span class="export-icon">{ }</span>
-              <span class="export-label">JSON</span>
-            </button>
-            <button class="export-btn" data-format="playwright">
-              <span class="export-icon">🎭</span>
-              <span class="export-label">Playwright</span>
-            </button>
-            <button class="export-btn" data-format="selenium-python">
-              <span class="export-icon">🐍</span>
-              <span class="export-label">Selenium Python</span>
-            </button>
-            <button class="export-btn" data-format="selenium-java">
-              <span class="export-icon">☕</span>
-              <span class="export-label">Selenium Java</span>
+
+          <!-- Download Button (shown after recording) -->
+          <div class="download-section" id="downloadSection" style="display: none;">
+            <button id="downloadBtn" class="btn btn-download">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                <polyline points="7 10 12 15 17 10"></polyline>
+                <line x1="12" y1="15" x2="12" y2="3"></line>
+              </svg>
+              Download Recording (JSON)
             </button>
           </div>
+
         </div>
       </section>
 
-      <!-- History Tab -->
-      <section id="historyTab" class="tab-content">
-        <div class="history-panel">
-          <div class="panel-header">
-            <h3>Saved Recordings</h3>
-            <button id="clearAllBtn" class="btn btn-text btn-small">Clear All</button>
-          </div>
+      <!-- ==================== ADD NEW TAB ==================== -->
+      <section id="addnewTab" class="tab-content">
+        <div class="addnew-panel">
           
-          <div class="recordings-list" id="recordingsList">
-            <div class="empty-state">
-              <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-                <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/>
-                <path d="M3 3v5h5"/>
-              </svg>
-              <p>No saved recordings yet</p>
+          <div class="panel-title">
+            <h2>Add New Test Suite</h2>
+            <p>Upload an Excel file containing your test cases</p>
+          </div>
+
+          <!-- Existing Test Suites List -->
+          <div class="existing-suites" id="existingSuites">
+            <h3>Existing Test Suites</h3>
+            <div class="suites-list" id="existingSuitesList">
+              <div class="empty-hint">No test suites added yet</div>
             </div>
           </div>
-        </div>
-      </section>
 
-      <!-- Data Tab (Excel Upload) -->
-      <section id="dataTab" class="tab-content">
-        <div class="data-panel">
-          <div class="panel-header">
-            <h3>Test Data</h3>
-          </div>
-          
           <!-- Upload Section -->
           <div class="upload-section">
             <div class="upload-area" id="uploadArea">
@@ -211,98 +197,79 @@
                 <polyline points="17 8 12 3 7 8"></polyline>
                 <line x1="12" y1="3" x2="12" y2="15"></line>
               </svg>
-              <p>Drag & drop Excel file here</p>
-              <span class="upload-hint">or click to browse (.xlsx, .xls)</span>
+              <h3>Upload Excel File</h3>
+              <p>Drag & drop or click to browse</p>
+              <span class="file-types">Supports: .xlsx, .xls</span>
               <input type="file" id="excelFileInput" accept=".xlsx,.xls" hidden>
             </div>
           </div>
-          
-          <!-- Uploaded Files List -->
-          <div class="uploaded-files">
-            <div class="panel-header">
-              <h4>Uploaded Files</h4>
-              <button id="clearDataBtn" class="btn btn-text btn-small">Clear All</button>
+
+          <!-- Extraction Result -->
+          <div class="extraction-result" id="extractionResult" style="display: none;">
+            <div class="result-header">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                <polyline points="22 4 12 14.01 9 11.01"></polyline>
+              </svg>
+              <span>Test Cases Found</span>
             </div>
-            <div class="files-list" id="filesList">
-              <div class="empty-state small">
-                <p>No data files uploaded</p>
-              </div>
+
+            <div class="form-group">
+              <label class="form-label">Test Suite Name</label>
+              <input type="text" id="suiteNameInput" class="form-input" placeholder="Enter a name for this test suite">
+            </div>
+
+            <div class="extracted-info">
+              <span id="extractedTestCaseCount">0</span> test cases found
+            </div>
+
+            <div class="extracted-cases-list" id="extractedCasesList">
+              <!-- Test cases will be populated here -->
+            </div>
+
+            <div class="extraction-actions">
+              <button class="btn btn-secondary" id="cancelUploadBtn">Cancel</button>
+              <button class="btn btn-primary" id="confirmUploadBtn">Confirm & Save</button>
             </div>
           </div>
-          
-          <!-- Data Preview -->
-          <div class="data-preview" id="dataPreview" style="display: none;">
-            <div class="panel-header">
-              <h4>Data Preview</h4>
-              <button id="closePreviewBtn" class="btn btn-text btn-small">Close</button>
-            </div>
-            <div class="preview-content" id="previewContent"></div>
-          </div>
+
         </div>
       </section>
-    </main>
 
-    <!-- Recording Details Modal -->
-    <div class="modal" id="recordingModal">
-      <div class="modal-backdrop"></div>
-      <div class="modal-content">
-        <div class="modal-header">
-          <h2 id="modalTitle">Recording Details</h2>
-          <button class="modal-close" id="modalClose">&times;</button>
-        </div>
-        <div class="modal-body">
-          <div class="recording-info">
-            <div class="info-row">
-              <span class="info-label">Name:</span>
-              <input type="text" id="modalRecordingName" class="info-value-input">
-            </div>
-            <div class="info-row">
-              <span class="info-label">Actions:</span>
-              <span class="info-value" id="modalActionCount">0</span>
-            </div>
-            <div class="info-row">
-              <span class="info-label">Date:</span>
-              <span class="info-value" id="modalDate">-</span>
-            </div>
-            <div class="info-row">
-              <span class="info-label">URL:</span>
-              <span class="info-value info-url" id="modalUrl">-</span>
-            </div>
+      <!-- ==================== HISTORY TAB ==================== -->
+      <section id="historyTab" class="tab-content">
+        <div class="history-panel">
+          
+          <div class="panel-title">
+            <h2>History</h2>
+            <p>View your test suites and recorded test cases</p>
           </div>
-          
-          <div class="modal-actions-list" id="modalActionsList"></div>
-          
-          <div class="modal-export">
-            <h4>Export As</h4>
-            <div class="export-options">
-              <button class="export-btn" data-format="json">
-                <span class="export-icon">{ }</span>
-                <span class="export-label">JSON</span>
-              </button>
-              <button class="export-btn" data-format="playwright">
-                <span class="export-icon">🎭</span>
-                <span class="export-label">Playwright</span>
-              </button>
-              <button class="export-btn" data-format="selenium-python">
-                <span class="export-icon">🐍</span>
-                <span class="export-label">Selenium Python</span>
-              </button>
-              <button class="export-btn" data-format="selenium-java">
-                <span class="export-icon">☕</span>
-                <span class="export-label">Selenium Java</span>
+
+          <!-- Test Suites Tree -->
+          <div class="test-suites-tree" id="testSuitesTree">
+            <div class="empty-state">
+              <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path>
+              </svg>
+              <p>No test suites yet</p>
+              <span class="hint">Upload an Excel file to get started</span>
+              <button class="btn btn-primary" id="goToUploadBtn">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <line x1="12" y1="5" x2="12" y2="19"></line>
+                  <line x1="5" y1="12" x2="19" y2="12"></line>
+                </svg>
+                Add Test Suite
               </button>
             </div>
           </div>
+
         </div>
-        <div class="modal-footer">
-          <button class="btn btn-danger" id="deleteRecordingBtn">Delete</button>
-          <button class="btn btn-primary" id="saveRecordingBtn">Save Changes</button>
-        </div>
-      </div>
-    </div>
+      </section>
+
+    </main>
   </div>
 
-  <!-- SheetJS library for Excel parsing (local copy) -->
+  <!-- SheetJS library for Excel parsing -->
   <script src="xlsx.min.js"></script>
   <script src="export.js"></script>
   <script src="sidepanel.js"></script>

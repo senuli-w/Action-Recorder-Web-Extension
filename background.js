@@ -1,6 +1,6 @@
-// Background Service Worker - Manages recording state, saved recordings, and coordinates content scripts
+// Background Service Worker - Manages recording state and coordinates content scripts
 
-// State
+// ==================== STATE ====================
 let isRecording = false;
 let currentRecording = {
   name: '',
@@ -10,6 +10,8 @@ let currentRecording = {
 };
 let activeTabId = null;
 
+// ==================== SIDE PANEL SETUP ====================
+
 // Open side panel when extension icon is clicked
 chrome.action.onClicked.addListener(async (tab) => {
   await chrome.sidePanel.open({ tabId: tab.id });
@@ -18,10 +20,11 @@ chrome.action.onClicked.addListener(async (tab) => {
 // Set side panel behavior
 chrome.sidePanel.setPanelBehavior({ openPanelOnActionClick: true }).catch(() => {});
 
-// Listen for messages from sidebar and content scripts
+// ==================== MESSAGE HANDLING ====================
+
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
   handleMessage(message, sender, sendResponse);
-  return true; // Keep message channel open for async response
+  return true; // Keep channel open for async
 });
 
 async function handleMessage(message, sender, sendResponse) {
@@ -37,8 +40,8 @@ async function handleMessage(message, sender, sendResponse) {
       break;
       
     case 'GET_STATUS':
-      sendResponse({ 
-        isRecording, 
+      sendResponse({
+        isRecording,
         currentRecording,
         activeTabId
       });
@@ -54,85 +57,38 @@ async function handleMessage(message, sender, sendResponse) {
           url: sender.tab?.url || sender.url
         };
         currentRecording.actions.push(action);
-        // Notify sidebar of new action
-        chrome.runtime.sendMessage({ 
-          type: 'NEW_ACTION', 
+        
+        // Notify side panel
+        chrome.runtime.sendMessage({
+          type: 'NEW_ACTION',
           action,
-          actionCount: currentRecording.actions.length 
+          actionCount: currentRecording.actions.length
         }).catch(() => {});
       }
-      sendResponse({ success: true });
-      break;
-      
-    case 'GET_SAVED_RECORDINGS':
-      const recordings = await getSavedRecordings();
-      sendResponse({ recordings });
-      break;
-      
-    case 'SAVE_RECORDING':
-      await saveRecording(message.recording);
-      sendResponse({ success: true });
-      break;
-      
-    case 'DELETE_RECORDING':
-      await deleteRecording(message.id);
-      sendResponse({ success: true });
-      break;
-      
-    case 'LOAD_RECORDING':
-      const loaded = await loadRecording(message.id);
-      sendResponse({ recording: loaded });
-      break;
-      
-    case 'RENAME_RECORDING':
-      await renameRecording(message.id, message.newName);
       sendResponse({ success: true });
       break;
       
     case 'ADD_PAGE_MARKER':
-      if (isRecording) {
+      if (isRecording && message.pageName) {
         const pageMarkerAction = {
           type: 'page-marker',
           pageName: message.pageName,
           timestamp: Date.now(),
-          description: `Page: ${message.pageName}`
+          description: message.pageName
         };
         currentRecording.actions.push(pageMarkerAction);
-        // Notify sidebar
-        chrome.runtime.sendMessage({ 
-          type: 'NEW_ACTION', 
+        
+        // Notify side panel
+        chrome.runtime.sendMessage({
+          type: 'NEW_ACTION',
           action: pageMarkerAction,
-          actionCount: currentRecording.actions.length 
-        }).catch(() => {});
-      }
-      sendResponse({ success: true });
-      break;
-      
-    case 'AUTO_PAGE_MARKER':
-      // Auto-detected page change from content script
-      if (isRecording && message.pageName) {
-        const autoPageMarkerAction = {
-          type: 'page-marker',
-          pageName: message.pageName,
-          timestamp: Date.now(),
-          auto: true,
-          description: `Page: ${message.pageName}`
-        };
-        currentRecording.actions.push(autoPageMarkerAction);
-        // Notify sidebar
-        chrome.runtime.sendMessage({ 
-          type: 'NEW_ACTION', 
-          action: autoPageMarkerAction,
-          actionCount: currentRecording.actions.length,
-          autoPageChange: true,
-          pageName: message.pageName
+          actionCount: currentRecording.actions.length
         }).catch(() => {});
       }
       sendResponse({ success: true });
       break;
       
     case 'ASSERTION_COMPLETE':
-      // Notify sidebar that assertion mode should be turned off
       chrome.runtime.sendMessage({ type: 'ASSERTION_COMPLETE' }).catch(() => {});
       sendResponse({ success: true });
       break;
@@ -142,20 +98,26 @@ async function handleMessage(message, sender, sendResponse) {
   }
 }
 
+// ==================== RECORDING CONTROL ====================
+
 async function startRecording(tabId, name) {
   isRecording = true;
   activeTabId = tabId;
   
-  const tab = await chrome.tabs.get(tabId);
+  let tab;
+  try {
+    tab = await chrome.tabs.get(tabId);
+  } catch (e) {
+    console.error('[Background] Failed to get tab:', e);
+    return;
+  }
   
-  // Generate timestamp-based name if not provided
-  const timestamp = new Date().toLocaleString('en-US', { 
-    month: 'short', 
-    day: 'numeric', 
-    hour: '2-digit', 
+  const timestamp = new Date().toLocaleString('en-US', {
+    month: 'short',
+    day: 'numeric',
+    hour: '2-digit',
     minute: '2-digit',
-    second: '2-digit',
-    hour12: false 
+    hour12: false
   });
   
   currentRecording = {
@@ -166,100 +128,59 @@ async function startRecording(tabId, name) {
     url: tab.url
   };
   
-  // Inject content script into all frames of the active tab
+  // Inject content script into all frames
   try {
     await chrome.scripting.executeScript({
       target: { tabId: tabId, allFrames: true },
       files: ['content.js']
     });
     
-    // First, collect iframe info from the main frame and send to child frames
-    try {
-      await chrome.tabs.sendMessage(tabId, { type: 'COLLECT_IFRAME_INFO' });
-    } catch (e) {
-      console.log('Could not collect iframe info:', e);
-    }
-    
-    // Notify all content scripts to start recording
+    // Start recording in all frames
     await chrome.tabs.sendMessage(tabId, { type: 'START_RECORDING' });
   } catch (error) {
-    console.error('Failed to inject content script:', error);
+    console.error('[Background] Failed to inject content script:', error);
   }
+  
+  console.log('[Background] Recording started:', currentRecording.name);
 }
 
 async function stopRecording() {
   isRecording = false;
   
-  // Notify content scripts to stop recording
+  // Stop recording in all frames
   if (activeTabId) {
     try {
-      await chrome.tabs.sendMessage(activeTabId, { type: 'STOP_RECORDING' });
-    } catch (e) {}
-  }
-  
-  const recording = { ...currentRecording, endTime: Date.now() };
-  
-  // Auto-save the recording with timestamp in name if generic
-  if (recording.actions.length > 0) {
-    // Ensure recording has a good name with timestamp
-    if (!recording.name || recording.name.startsWith('Recording -')) {
-      const timestamp = new Date().toLocaleString('en-US', { 
-        month: 'short', 
-        day: 'numeric', 
-        hour: '2-digit', 
-        minute: '2-digit',
-        hour12: false 
+      // Send stop via scripting API (more reliable for iframes)
+      await chrome.scripting.executeScript({
+        target: { tabId: activeTabId, allFrames: true },
+        func: () => {
+          if (window.__actionRecorderInjected) {
+            window.postMessage({ type: '__ACTION_RECORDER_STOP__' }, '*');
+          }
+        }
       });
-      recording.name = `Recording - ${timestamp}`;
+      
+      // Also send regular message
+      await chrome.tabs.sendMessage(activeTabId, { type: 'STOP_RECORDING' });
+    } catch (e) {
+      console.log('[Background] Error stopping recording:', e);
     }
-    await saveRecording(recording);
-    console.log('[Background] Auto-saved recording:', recording.name, 'with', recording.actions.length, 'actions');
   }
+  
+  const recording = {
+    ...currentRecording,
+    endTime: Date.now()
+  };
+  
+  console.log('[Background] Recording stopped with', recording.actions.length, 'actions');
   
   activeTabId = null;
   return recording;
 }
 
-async function getSavedRecordings() {
-  const result = await chrome.storage.local.get('recordings');
-  return result.recordings || [];
-}
+// ==================== DYNAMIC FRAME HANDLING ====================
 
-async function saveRecording(recording) {
-  const recordings = await getSavedRecordings();
-  
-  // Check if recording already exists (update) or is new
-  const existingIndex = recordings.findIndex(r => r.id === recording.id);
-  if (existingIndex >= 0) {
-    recordings[existingIndex] = recording;
-  } else {
-    recordings.unshift(recording); // Add to beginning
-  }
-  
-  await chrome.storage.local.set({ recordings });
-}
-
-async function deleteRecording(id) {
-  const recordings = await getSavedRecordings();
-  const filtered = recordings.filter(r => r.id !== id);
-  await chrome.storage.local.set({ recordings: filtered });
-}
-
-async function loadRecording(id) {
-  const recordings = await getSavedRecordings();
-  return recordings.find(r => r.id === id);
-}
-
-async function renameRecording(id, newName) {
-  const recordings = await getSavedRecordings();
-  const recording = recordings.find(r => r.id === id);
-  if (recording) {
-    recording.name = newName;
-    await chrome.storage.local.set({ recordings });
-  }
-}
-
-// Handle new frames being loaded (for dynamically added iframes)
+// Handle new frames being loaded during recording
 chrome.webNavigation.onCompleted.addListener(async (details) => {
   if (isRecording && details.tabId === activeTabId) {
     try {
@@ -268,11 +189,13 @@ chrome.webNavigation.onCompleted.addListener(async (details) => {
         files: ['content.js']
       });
       await chrome.tabs.sendMessage(details.tabId, { type: 'START_RECORDING' }, { frameId: details.frameId });
-    } catch (e) {}
+    } catch (e) {
+      // Frame might not be accessible
+    }
   }
 });
 
-// Handle tab updates
+// Handle tab navigation during recording
 chrome.tabs.onUpdated.addListener(async (tabId, changeInfo, tab) => {
   if (isRecording && tabId === activeTabId && changeInfo.status === 'complete') {
     try {
@@ -281,6 +204,10 @@ chrome.tabs.onUpdated.addListener(async (tabId, changeInfo, tab) => {
         files: ['content.js']
       });
       await chrome.tabs.sendMessage(tabId, { type: 'START_RECORDING' });
-    } catch (e) {}
+    } catch (e) {
+      // Tab might not be accessible
+    }
   }
 });
+
+console.log('[Background] Service worker initialized');

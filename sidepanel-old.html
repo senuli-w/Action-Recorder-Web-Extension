@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Test Automation Studio</title>
+  <link rel="stylesheet" href="sidepanel.css">
+</head>
+<body>
+  <div class="app-container">
+    <!-- Header -->
+    <header class="header">
+      <div class="header-title">
+        <span class="logo">🧪</span>
+        <div class="header-text">
+          <h1>Test Automation Studio</h1>
+          <p class="header-subtitle">Selenium Test Generator</p>
+        </div>
+      </div>
+    </header>
+
+    <!-- Navigation Tabs -->
+    <nav class="nav-tabs">
+      <button class="nav-tab active" data-tab="record">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="12" cy="12" r="10"></circle>
+          <circle cx="12" cy="12" r="4" fill="currentColor"></circle>
+        </svg>
+        Record
+      </button>
+      <button class="nav-tab" data-tab="upload">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+          <polyline points="17 8 12 3 7 8"></polyline>
+          <line x1="12" y1="3" x2="12" y2="15"></line>
+        </svg>
+        Upload Suite
+      </button>
+      <button class="nav-tab" data-tab="history">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M3 3h18v18H3zM12 8v8m-4-4h8"></path>
+        </svg>
+        Test Scripts
+      </button>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="main-content">
+      
+      <!-- Record Tab -->
+      <section id="recordTab" class="tab-content active"
+        Data
+      </button>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="main-content">
+      <!-- Recorder Tab -->
+      <section id="recorderTab" class="tab-content active">
+        <!-- Recording Controls -->
+        <div class="control-panel">
+          <div class="recording-name-input">
+            <label for="recordingName">Recording Name</label>
+            <input type="text" id="recordingName" placeholder="My Test Recording">
+          </div>
+          
+          <div class="control-buttons">
+            <button id="startBtn" class="btn btn-primary btn-large">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                <circle cx="12" cy="12" r="10"/>
+              </svg>
+              Start Recording
+            </button>
+            <button id="stopBtn" class="btn btn-danger btn-large" disabled>
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                <rect x="6" y="6" width="12" height="12" rx="2"/>
+              </svg>
+              Stop Recording
+            </button>
+          </div>
+          
+          <div class="recording-status" id="recordingStatus">
+            <span class="status-dot"></span>
+            <span class="status-text">Ready to record</span>
+          </div>
+        </div>
+
+        <!-- Page Marker Input (shown during recording) -->
+        <div class="page-marker-panel" id="pageMarkerPanel" style="display: none;">
+          <div class="panel-header">
+            <h3>📄 Page Marker</h3>
+          </div>
+          
+          <!-- Manual Page Marker -->
+          <div class="page-marker-input">
+            <input type="text" id="pageMarkerName" placeholder="Enter page name">
+            <button id="addPageMarkerBtn" class="btn btn-secondary">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <line x1="12" y1="5" x2="12" y2="19"></line>
+                <line x1="5" y1="12" x2="19" y2="12"></line>
+              </svg>
+              Add
+            </button>
+          </div>
+          
+          <!-- Assertion Mode Button -->
+          <div class="assertion-section">
+            <button id="assertionBtn" class="btn btn-assertion">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                <polyline points="22 4 12 14.01 9 11.01"></polyline>
+              </svg>
+              Add Assertion
+            </button>
+            <span class="assertion-hint" id="assertionHint" style="display: none;">Click an element on the page to assert...</span>
+          </div>
+          
+          <p class="helper-text">Mark page transitions for organized test code generation</p>
+        </div>
+
+        <!-- Current Recording Actions -->
+        <div class="actions-panel">
+          <div class="panel-header">
+            <h3>Recorded Actions</h3>
+            <span class="action-count" id="actionCount">0 actions</span>
+          </div>
+          
+          <div class="actions-list" id="actionsList">
+            <div class="empty-state">
+              <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                <path d="M15 15l-2 5L9 9l11 4-5 2zm0 0l5 5M7.188 2.239l.777 2.897M5.136 7.965l-2.898-.777M13.95 4.05l-2.122 2.122m-5.657 5.656l-2.12 2.122"/>
+              </svg>
+              <p>Click "Start Recording" to capture actions</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Export Panel (shown after recording) -->
+        <div class="export-panel" id="exportPanel" style="display: none;">
+          <div class="panel-header">
+            <h3>Export Recording</h3>
+          </div>
+          
+          <div class="export-options">
+            <button class="export-btn" data-format="json">
+              <span class="export-icon">{ }</span>
+              <span class="export-label">JSON</span>
+            </button>
+            <button class="export-btn" data-format="playwright">
+              <span class="export-icon">🎭</span>
+              <span class="export-label">Playwright</span>
+            </button>
+            <button class="export-btn" data-format="selenium-python">
+              <span class="export-icon">🐍</span>
+              <span class="export-label">Selenium Python</span>
+            </button>
+            <button class="export-btn" data-format="selenium-java">
+              <span class="export-icon">☕</span>
+              <span class="export-label">Selenium Java</span>
+            </button>
+          </div>
+        </div>
+      </section>
+
+      <!-- History Tab -->
+      <section id="historyTab" class="tab-content">
+        <div class="history-panel">
+          <div class="panel-header">
+            <h3>Saved Recordings</h3>
+            <button id="clearAllBtn" class="btn btn-text btn-small">Clear All</button>
+          </div>
+          
+          <div class="recordings-list" id="recordingsList">
+            <div class="empty-state">
+              <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/>
+                <path d="M3 3v5h5"/>
+              </svg>
+              <p>No saved recordings yet</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Data Tab (Excel Upload) -->
+      <section id="dataTab" class="tab-content">
+        <div class="data-panel">
+          <div class="panel-header">
+            <h3>Test Data</h3>
+          </div>
+          
+          <!-- Upload Section -->
+          <div class="upload-section">
+            <div class="upload-area" id="uploadArea">
+              <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                <polyline points="17 8 12 3 7 8"></polyline>
+                <line x1="12" y1="3" x2="12" y2="15"></line>
+              </svg>
+              <p>Drag & drop Excel file here</p>
+              <span class="upload-hint">or click to browse (.xlsx, .xls)</span>
+              <input type="file" id="excelFileInput" accept=".xlsx,.xls" hidden>
+            </div>
+            
+            <!-- Azure Sync Status -->
+            <div class="azure-sync-indicator" id="azureSyncIndicator">
+              <span class="sync-icon">☁️</span>
+              <span id="azureSyncText">Cloud sync: Not configured</span>
+            </div>
+          </div>
+          
+          <!-- Uploaded Files List -->
+          <div class="uploaded-files">
+            <div class="panel-header">
+              <h4>Uploaded Files</h4>
+              <div class="panel-header-actions">
+                <button id="uploadAllToCloudBtn" class="btn btn-small upload-cloud-btn" title="Upload all to Azure">☁️ Sync</button>
+                <button id="clearDataBtn" class="btn btn-text btn-small">Clear All</button>
+              </div>
+            </div>
+            <div class="files-list" id="filesList">
+              <div class="empty-state small">
+                <p>No data files uploaded</p>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Data Preview -->
+          <div class="data-preview" id="dataPreview" style="display: none;">
+            <div class="panel-header">
+              <h4>Data Preview</h4>
+              <button id="closePreviewBtn" class="btn btn-text btn-small">Close</button>
+            </div>
+            <div class="preview-content" id="previewContent"></div>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <!-- Recording Details Modal -->
+    <div class="modal" id="recordingModal">
+      <div class="modal-backdrop"></div>
+      <div class="modal-content">
+        <div class="modal-header">
+          <h2 id="modalTitle">Recording Details</h2>
+          <button class="modal-close" id="modalClose">&times;</button>
+        </div>
+        <div class="modal-body">
+          <div class="recording-info">
+            <div class="info-row">
+              <span class="info-label">Name:</span>
+              <input type="text" id="modalRecordingName" class="info-value-input">
+            </div>
+            <div class="info-row">
+              <span class="info-label">Actions:</span>
+              <span class="info-value" id="modalActionCount">0</span>
+            </div>
+            <div class="info-row">
+              <span class="info-label">Date:</span>
+              <span class="info-value" id="modalDate">-</span>
+            </div>
+            <div class="info-row">
+              <span class="info-label">URL:</span>
+              <span class="info-value info-url" id="modalUrl">-</span>
+            </div>
+          </div>
+          
+          <div class="modal-actions-list" id="modalActionsList"></div>
+          
+          <div class="modal-export">
+            <h4>Export As</h4>
+            <div class="export-options">
+              <button class="export-btn" data-format="json">
+                <span class="export-icon">{ }</span>
+                <span class="export-label">JSON</span>
+              </button>
+              <button class="export-btn" data-format="playwright">
+                <span class="export-icon">🎭</span>
+                <span class="export-label">Playwright</span>
+              </button>
+              <button class="export-btn" data-format="selenium-python">
+                <span class="export-icon">🐍</span>
+                <span class="export-label">Selenium Python</span>
+              </button>
+              <button class="export-btn" data-format="selenium-java">
+                <span class="export-icon">☕</span>
+                <span class="export-label">Selenium Java</span>
+              </button>
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button class="btn btn-danger" id="deleteRecordingBtn">Delete</button>
+          <button class="btn btn-primary" id="saveRecordingBtn">Save Changes</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Settings Modal -->
+  <div class="modal-overlay" id="settingsModal">
+    <div class="modal settings-modal">
+      <div class="modal-header">
+        <h2>Settings</h2>
+        <button class="modal-close" id="closeSettingsBtn">&times;</button>
+      </div>
+      <div class="modal-body">
+        <div class="settings-section">
+          <h3>☁️ Azure Blob Storage</h3>
+          <p class="settings-desc">Configure Azure Storage to sync Excel files and recordings to the cloud.</p>
+          
+          <div class="form-group">
+            <label for="azureAccountName">Storage Account Name</label>
+            <input type="text" id="azureAccountName" placeholder="e.g., actionrecorderstore">
+          </div>
+          
+          <div class="form-group">
+            <label for="azureSasToken">SAS Token</label>
+            <input type="password" id="azureSasToken" placeholder="?sv=2022-11-02&ss=b&srt=sco...">
+            <small class="form-hint">Generate from Azure Portal → Storage Account → Shared access signature</small>
+          </div>
+          
+          <div class="azure-status" id="azureStatus">
+            <span class="status-indicator disconnected"></span>
+            <span class="status-text">Not configured</span>
+          </div>
+          
+          <div class="settings-actions">
+            <button class="btn btn-secondary" id="testAzureBtn">Test Connection</button>
+            <button class="btn btn-primary" id="saveAzureBtn">Save Configuration</button>
+          </div>
+        </div>
+        
+        <div class="settings-section">
+          <h3>📁 Cloud Files</h3>
+          <div class="cloud-files-section">
+            <div class="cloud-files-header">
+              <span>Excel Files in Cloud</span>
+              <button class="btn btn-small" id="refreshCloudFilesBtn">↻ Refresh</button>
+            </div>
+            <div class="cloud-files-list" id="cloudFilesList">
+              <p class="no-files">Configure Azure Storage to view cloud files</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SheetJS library for Excel parsing (local copy) -->
+  <script src="xlsx.min.js"></script>
+  <script src="azure-storage.js"></script>
+  <script src="export.js"></script>
+  <script src="sidepanel.js"></script>
+</body>
+</html>
